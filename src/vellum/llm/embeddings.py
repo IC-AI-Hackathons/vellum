@@ -4,7 +4,7 @@ from PIL import Image
 import torch
 
 
-__all__ = ['ColQwenEmbeddings', 'colqwn_embeddings']
+__all__ = ['ColQwenEmbeddings', 'colqwen_embeddings']
 
 
 class ColQwenEmbeddings:
