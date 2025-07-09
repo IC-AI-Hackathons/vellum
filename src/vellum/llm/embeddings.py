@@ -4,7 +4,7 @@ from PIL.Image import Image, open as open_image
 import torch
 
 
-__all__ = ['BiQwenEmbeddings', 'colqwen_embeddings']
+__all__ = ['BiQwenEmbeddings', 'embeddings_model']
 
 
 class BiQwenEmbeddings:
@@ -56,5 +56,5 @@ class BiQwenEmbeddings:
             return query_embedding.float().cpu().numpy()
 
 
-embeddings_model = 'nomic-ai/nomic-embed-multimodal-3b'
-colqwen_embeddings = BiQwenEmbeddings(embeddings_model)
+embeddings_model_id = 'nomic-ai/nomic-embed-multimodal-3b'
+embeddings_model = BiQwenEmbeddings(embeddings_model_id)

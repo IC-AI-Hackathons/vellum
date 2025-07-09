@@ -1,9 +1,8 @@
 from langchain_chroma import Chroma
 from langchain.storage import InMemoryByteStore
-from langchain.retrievers import MultiVectorRetriever
 
 from vellum.documents.images import split_document_pages
-from vellum.llm.embeddings import colqwen_embeddings
+from vellum.llm.embeddings import embeddings_model
 
 
 class Documents:
@@ -11,7 +10,7 @@ class Documents:
         self.byte_store = InMemoryByteStore()
         self.vector_store = Chroma(
             collection_name=collection_name,
-            embedding_function=colqwen_embeddings)
+            embedding_function=embeddings_model)
 
     def add_document(self, file_name: str) -> None:
         image_uris = split_document_pages(file_name)
@@ -32,3 +31,24 @@ class Documents:
 
         self.byte_store.mset([
             (meta['id'], meta) for meta in image_meta])
+
+    def build_user_message(self, query: str):
+        pages = self.vector_store.similarity_search(query=query, k=4)
+        message = {
+            'role': "user",
+            'content': [
+                {
+                    'type': "text",
+                    'text': query,
+                },
+            ]
+        }
+        for page in pages:
+            message['content'].append({
+                'type': "image",
+                'source_type': "base64",
+                'mime_type': "image/png",
+                'data': page.page_content,
+            })
+
+        return message
