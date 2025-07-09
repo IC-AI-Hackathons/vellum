@@ -13,6 +13,6 @@ if __name__ == "__main__":
         if query == '/quit':
             break
 
-        res = documents.retriever.invoke(query)
+        res = documents.vector_store.similarity_search(query=query, k=3)
         from pprint import pprint
         pprint(res)
