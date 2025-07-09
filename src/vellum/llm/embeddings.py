@@ -1,26 +1,26 @@
-from colpali_engine.models import ColQwen2_5, ColQwen2_5_Processor
+from colpali_engine.models import BiQwen2_5, BiQwen2_5_Processor
 from transformers.utils.import_utils import is_flash_attn_2_available
 from PIL.Image import Image, open as open_image
 import torch
 
 
-__all__ = ['ColQwenEmbeddings', 'colqwen_embeddings']
+__all__ = ['BiQwenEmbeddings', 'colqwen_embeddings']
 
 
-class ColQwenEmbeddings:
+class BiQwenEmbeddings:
     """"
     Provides embeddings with ColQwen2.5.
     """
 
     def __init__(self, model_name: str) -> None:
-        self.model = ColQwen2_5.from_pretrained(
+        self.model = BiQwen2_5.from_pretrained(
             model_name,
             torch_dtype=torch.bfloat16,
             device_map='cuda:0',
             attn_implementation=('flash_attention_2'
                                  if is_flash_attn_2_available() else None))
 
-        self.processor = ColQwen2_5_Processor.from_pretrained(
+        self.processor = BiQwen2_5_Processor.from_pretrained(
             model_name,
             use_fast=True)
 
@@ -37,10 +37,10 @@ class ColQwenEmbeddings:
             with torch.no_grad():
                 image_embeddings: torch.Tensor = self.model(**batch_images)
                 for j, embedding in enumerate(image_embeddings):
+                    print("embedding shape is", embedding.shape)
                     result[i + j] = embedding.flatten().tolist()
 
         return result
-
 
     def embed_image(self, uris: list[str]) -> list[list[float]]:
         images = [open_image(uri) for uri in uris]
@@ -52,9 +52,10 @@ class ColQwenEmbeddings:
             .to(self.model.device)
 
         with torch.no_grad():
-            query_embedding: torch.Tensor = self.model(**batch_query)
+            query_embedding: torch.Tensor = self.model(**batch_query)[0]
+            print("query shape is", query_embedding.shape)
             return query_embedding.flatten().tolist()
 
 
-colqwen_embeddings_model = 'nomic-ai/colnomic-embed-multimodal-3b'
-colqwen_embeddings = ColQwenEmbeddings(colqwen_embeddings_model)
+embeddings_model = 'nomic-ai/nomic-embed-multimodal-3b'
+colqwen_embeddings = BiQwenEmbeddings(embeddings_model)
