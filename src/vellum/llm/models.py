@@ -1,4 +1,4 @@
-from colpali_engine.models import ColQwen2_5, ColQwen2_5Processor
+from colpali_engine.models import ColQwen2_5, ColQwen2_5_Processor
 from transformers.utils.import_utils import is_flash_attn_2_available
 import torch
 
@@ -17,5 +17,5 @@ embeddings_model = ColQwen2_5.from_pretrained(
                          if is_flash_attn_2_available() else None))
 
 # Multimodal processor
-embeddings_processor = ColQwen2_5Processor.from_pretrained(
+embeddings_processor = ColQwen2_5_Processor.from_pretrained(
     embeddings_model_name)
