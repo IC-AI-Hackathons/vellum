@@ -13,6 +13,6 @@ if __name__ == "__main__":
         if query == '/quit':
             break
 
-        res = documents.vector_store.similarity_search(query=query, k=3)
-        from pprint import pprint
-        pprint(res)
+        res = documents.vector_store.similarity_search(query=query, k=1)
+        for page in res:
+            print("Page meta:", page.metadata)

@@ -25,7 +25,7 @@ def split_document_pages(file_name: str, dpi: int = 500) -> list[str]:
     pages_directory.mkdir(parents=True, exist_ok=True)
 
     # Save the images to the pages directory
-    file_names = [f"{pages_directory / ('page_' + str(i))}.png" for i in range(len(images))]
+    file_names = [f"{pages_directory / ('page_' + str(i + 1))}.png" for i in range(len(images))]
     for i, image in enumerate(images):
         image.save(file_names[i], 'PNG')
 
