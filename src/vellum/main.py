@@ -8,7 +8,8 @@ if __name__ == "__main__":
     documents.add_document('assets/devito.pdf')
 
     while True:
-        query = input("\n> ", end='')
+        print("\n> ", end='')
+        query = input()
         if query == '/quit':
             break
 

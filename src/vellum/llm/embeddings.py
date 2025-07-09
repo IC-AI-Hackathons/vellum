@@ -29,7 +29,7 @@ class ColQwenEmbeddings:
         return self.embed_image_objects(images)
 
     def embed_image_objects(self, images: list[Image]) -> list[list[float]]:
-        batch_size = 8
+        batch_size = 4
         result: list[list[float]] = [None] * len(images)
         for i in range(0, len(images), batch_size):
             # Process images in batches
