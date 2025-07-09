@@ -24,11 +24,7 @@ class ColQwenEmbeddings:
             model_name,
             use_fast=True)
 
-    def embed_image(self, uris: list[str]) -> list[list[float]]:
-        images = [open_image(uri) for uri in uris]
-        return self.embed_image_objects(images)
-
-    def embed_image_objects(self, images: list[Image]) -> list[list[float]]:
+    def _embed_image_objects(self, images: list[Image]) -> list[list[float]]:
         batch_size = 4
         result: list[list[float]] = [None] * len(images)
         for i in range(0, len(images), batch_size):
@@ -44,6 +40,20 @@ class ColQwenEmbeddings:
                     result[i + j] = embedding.flatten().tolist()
 
         return result
+
+
+    def embed_image(self, uris: list[str]) -> list[list[float]]:
+        images = [open_image(uri) for uri in uris]
+        return self._embed_image_objects(images)
+
+    def embed_query(self, query: str) -> list[float]:
+        batch_query = self.processor \
+            .process_queries([query]) \
+            .to(self.model.device)
+
+        with torch.no_grad():
+            query_embedding: torch.Tensor = self.model(**batch_query)
+            return query_embedding.flatten().tolist()
 
 
 colqwen_embeddings_model = 'nomic-ai/colnomic-embed-multimodal-3b'
