@@ -2,7 +2,6 @@ import torch
 from vellum.llm.models import embeddings_model, embeddings_processor
 from PIL import Image
 
-
 if __name__ == "__main__":
     images = [
         Image.new('RGB', (100, 100), color='red'),
