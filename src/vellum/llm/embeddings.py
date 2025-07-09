@@ -1,6 +1,6 @@
 from colpali_engine.models import ColQwen2_5, ColQwen2_5_Processor
 from transformers.utils.import_utils import is_flash_attn_2_available
-from PIL import Image
+from PIL.Image import Image, open as open_image
 import torch
 
 
@@ -24,14 +24,26 @@ class ColQwenEmbeddings:
             model_name,
             use_fast=True)
 
-    def embed_image(self, image: Image) -> list[float]:
-        batch = self.processor \
-            .process_images([image]) \
-            .to(self.model.device)
+    def embed_image(self, uris: list[str]) -> list[list[float]]:
+        images = [open_image(uri) for uri in uris]
+        return self.embed_image_objects(images)
 
-        with torch.no_grad():
-            image_embeddings: torch.Tensor = self.model(**batch)
-            return image_embeddings[0].flatten().tolist()
+    def embed_image_objects(self, images: list[Image]) -> list[list[float]]:
+        batch_size = 8
+        result: list[list[float]] = [None] * len(images)
+        for i in range(0, len(images), batch_size):
+            # Process images in batches
+            batch = images[i:min(i + batch_size, len(images))]
+            batch_images = self.processor \
+                .process_images(batch) \
+                .to(self.model.device)
+
+            with torch.no_grad():
+                image_embeddings: torch.Tensor = self.model(**batch_images)
+                for j, embedding in enumerate(image_embeddings):
+                    result[i + j] = embedding.flatten().tolist()
+
+        return result
 
 
 colqwen_embeddings_model = 'nomic-ai/colnomic-embed-multimodal-3b'
