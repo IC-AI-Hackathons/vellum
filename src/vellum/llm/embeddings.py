@@ -36,9 +36,9 @@ class BiQwenEmbeddings:
 
             with torch.no_grad():
                 image_embeddings: torch.Tensor = self.model(**batch_images)
-                for j, embedding in enumerate(image_embeddings):
-                    print("embedding shape is", embedding.shape)
-                    result[i + j] = embedding.flatten().tolist()
+                for j, embedding in enumerate(image_embeddings \
+                                              .float().cpu().numpy()):
+                    result[i + j] = embedding
 
         return result
 
@@ -53,8 +53,7 @@ class BiQwenEmbeddings:
 
         with torch.no_grad():
             query_embedding: torch.Tensor = self.model(**batch_query)[0]
-            print("query shape is", query_embedding.shape)
-            return query_embedding.flatten().tolist()
+            return query_embedding.float().cpu().numpy()
 
 
 embeddings_model = 'nomic-ai/nomic-embed-multimodal-3b'
