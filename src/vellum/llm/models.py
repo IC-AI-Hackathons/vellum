@@ -12,10 +12,11 @@ embeddings_model_name = 'nomic-ai/colnomic-embed-multimodal-3b'
 embeddings_model = ColQwen2_5.from_pretrained(
     embeddings_model_name,
     torch_dtype=torch.bfloat16,
-    device_map='auto',
+    device_map='cuda:0',
     attn_implementation=('flash_attention_2'
                          if is_flash_attn_2_available() else None))
 
 # Multimodal processor
 embeddings_processor = ColQwen2_5_Processor.from_pretrained(
-    embeddings_model_name)
+    embeddings_model_name,
+    use_fast=True)
